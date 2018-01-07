@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bar Chart</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <style type="text/css">
+
+body {
+  font: 10px sans-serif;
+}
+
+.bar rect {
+  fill: steelblue;
+}
+
+.bar text.value {
+  fill: black;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.axis path {
+  fill: none;
+}
+
+.x.axis line {
+  stroke: #fff;
+  stroke-opacity: .8;
+}
+
+.y.axis path {
+  stroke: black;
+}
+
+    </style>
+</head>
+
+
+  
+<body>
+
+<h1>
+
+<p>
+CSiBE code size benchmark for GCC<br>
+</p>
+</h1>
+
+<p>
+All toolchains built with <a href="http://github.com/fredrikhederstierna/buildbuddy">gnu_toolchain_build_buddy</a>
+</p>
+
+<p>
+CSiBE v2.1.1 sources downloaded from
+<a href="http://www.inf.u-szeged.hu/projectdirs/csibe/download.php">CSiBE homepage</a> and modified some to make it runnable from Ubuntu 14.04 shell.<br>
+All CSiBE Sources +modifications by me can be downloaded <a href="src/CSiBE-v2.1.1.patch">here</a> or full package <a href="src/CSiBE-v2.1.1-patched.tar.xz">here</a><br>
+All result-size files and summary can be downloaded <a href="results/csibe_results.zip">here</a>.<br>
+
+Graph was copied from <a href="https://github.com/mbostock/d3/wiki/Gallery">D3 gallery</a><br><br>
+Below benchmark is for arm9e thumb1 code, download result files above for arm9e arm, cortex-m0, cortex-m3 thumb2.
+This page was last updated 2017-05-06<br>
+
+<p>
+
+<script type="text/javascript">
+
+var m = [30, 100, 10, 60],
+    w = 960 - m[1] - m[3],
+    h = 410 - m[0] - m[2];
+
+var format = d3.format(",.0f");
+
+var x = d3.scale.linear().range([0, w]),
+    y = d3.scale.ordinal().rangeRoundBands([0, h], .1);
+
+var xAxis = d3.svg.axis().scale(x).orient("top").tickSize(-h),
+    yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", w + m[1] + m[3])
+    .attr("height", h + m[0] + m[2])
+    .append("g")
+    .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+  d3.csv("sample-data.csv", function(data) {
+
+  // Parse numbers, and sort by value.
+  data.forEach(function(d) { d.value = +d.value; });
+  //data.sort(function(a, b) { return b.value - a.value; });
+
+  // Set the scale domain.
+  x.domain([0, d3.max(data, function(d) { return d.value; })]);
+  y.domain(data.map(function(d) { return d.name; }));
+
+  var bar = svg.selectAll("g.bar")
+      .data(data)
+    .enter().append("g")
+      .attr("class", "bar")
+      .attr("transform", function(d) { return "translate(0," + y(d.name) + ")"; });
+
+  bar.append("rect")
+      .attr("width", function(d) { return x(d.value); })
+      .attr("height", y.rangeBand());
+
+  bar.append("text")
+      .attr("class", "value")
+      .attr("x", function(d) { return x(d.value); })
+      .attr("y", y.rangeBand() / 2)
+      .attr("dx", +3)
+      .attr("dy", ".35em")
+      .attr("text-anchor", "start")
+      .text(function(d) { return format(d.value); });
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+});
+
+    </script>
+  </body>
+</html>

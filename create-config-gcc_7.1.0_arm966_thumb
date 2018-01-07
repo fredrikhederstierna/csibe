@@ -1,0 +1,556 @@
+#!/bin/bash
+#
+#    create-config: Creates a CSiBE configuration
+#    Copyright (C) 2004  Tamas Gergely
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+#
+# Version history:
+#   2.1.1 (2005-08-03) : follow mainline
+#                        use VPATH for source directories
+#   2.1.0 (2005-02-21) : fix mainline error about arrays
+#                        typo fix
+#   2.0   (2004-05-19) : testbed size increased
+#                        execution time measurement added
+#   1.1.1 (2004-02-18) : bug about relative paths fixed
+#                        added variable time measure repeat count
+#   1.1   (2003-12-10) : compile time measurement added
+#                        empty string parameter handling changed 
+#   1.0.1 (2003-08-11) : correction of some comments
+#   1.0   (2003-08-08) : first public version
+#
+VER_M=2
+VER_S=1
+VER_B=1
+VERSION=${VER_M}.${VER_S}`if [ -n "${VER_B}" ] ; then echo ".${VER_B}" ; fi`
+
+#
+# Set the variable `CC' to point to the compiler that will be used
+# to produce the binaries to be measured (the default is "gcc").
+# `CCOPT' can be used to provide compiler flags (the default is "-Os").
+#
+#CC="gcc"
+#CCOPT="-Os"
+CC="/usr/local/gcc/csibe/arm-none-eabi-toolchain-gcc-7.1.0-csibe-softfloat/bin/arm-none-eabi-gcc"
+CCOPT="-Os -std=gnu89 -mthumb -mcpu=arm966e-s -mno-thumb-interwork"
+
+#
+# The new configuration directory will be created in the base directory
+# set in the variable `BASEDIR'. By default it is the current working dir.
+#
+BASEDIR=`pwd`
+
+#
+# Searching for the sources. Assumed to be ../src from this script.
+#
+case $0 in
+/*/bin/create-config)
+	SRCDIR=`echo $0 | sed 's/bin\/create-config$/src/'`
+;;
+*bin/create-config)
+	SRCDIR=`echo $0 | sed 's/bin\/create-config$/src/'`
+	SRCDIR=`pwd`/${SRCDIR}
+;;
+create-config)
+	case `which $0` in
+	/*/bin/create-config)
+		SRCDIR=`which $0 | sed 's/bin\/create-config$/src/'`
+	;;
+	*bin/create-config)
+		SRCDIR=`pwd``which $0 | sed 's/bin\/create-config$/src/'`
+	;;
+	esac
+;;
+*create-config)
+	SRCDIR=`pwd`/../src
+;;
+esac
+
+#
+# The variable `CONFIG' will be set by this script and it will hold the
+# name of the configuration directory given when invoking `create-config'.
+#
+CONFIG=""
+
+
+#
+# Use variable `SIZE' to point to the program that will be used to extract
+# the size information from the binary files (the default is "size").
+#
+SIZE="size"
+
+#
+# Use variable `TIME' to point to the program that will be used to measure
+# the time consumption of the processes (the default is "time").
+#
+TIME="/usr/bin/time"
+
+#
+# Use variable `SHELL' to point to the executable that will be used as shell
+# since default /bin/sh might link to too old shell (the default is "bash").
+#
+SHELL="/bin/bash"
+
+#
+# Use variable `ZIP' to point to the tool that will be used to compress
+# the data, or leave it empty.
+#
+ZIP="gzip"
+
+#
+# Use varible `RUNSIM' to execute simulator for measuring execution time.
+#
+
+RUNSIM=""
+
+#
+# Use variables `OBJCOUNTER' and `RUNCOUNTER' to set how many times the
+# compilation time and execution time are measured (the default is 3 for
+# both.)
+#
+OBJCOUNTER=3
+RUNCOUNTER=3
+
+#
+# Use variable `RESULTS' to set what measurements should be done. Possible
+# values are from "time size runtime". Runtime requires other sources (the
+# default value contains all measurements).
+#
+RESULTS="time size"
+
+#
+# The variables `USER', `BRANCH', `TARGET', `LIB', `CVSDATE' and `CVSTAG'
+# are copied into the resulting csv file. They are reserved for advanced use
+# and do not influence the measurement in any way.
+# You don't need to modify these for regular use.
+#
+USER=
+BRANCH=
+TARGET=
+LIB=
+CVSDATE=
+CVSTAG=
+
+function Message () {
+	echo -e "create-config version ${VERSION}, Copyright (C) 2004 Tamas Gergely\n"
+	echo -e "create-config comes with ABSOLUTELY NO WARRANTY; for details see"
+	echo -e "COPYING. This is free software, and you are welcome to redistribute"
+	echo -e "it under certain conditions; see COPYING for details.\n"
+}
+
+function Help () {
+	echo -e "Usage: $0 \e[1m[options]\e[0m \e[1;4mname\e[0m\n"
+	echo -e "\tThis script creates a CSiBE configuration in the"
+	echo -e "\tbase directory with the given \e[1;4mname\e[0m.\n"
+	echo -e "basic options:"
+
+	echo -e "\n\t-a | --ar \e[1;4mstr\e[0m"
+	echo -e "\t\tSets archiver to \e[1;4mstr\e[0m. Default is \"\e[1mar\e[0m\"\e[1m^\e[0m."
+
+	echo -e "\n\t-A | --as \e[1;4mstr\e[0m"
+	echo -e "\t\tSets assembler to \e[1;4mstr\e[0m. Default is \"\e[1mas\e[0m\"\e[1m^\e[0m."
+
+	echo -e "\n\t-c | --compiler \e[1;4mstr\e[0m"
+	echo -e "\t\tSets compiler to \e[1;4mstr\e[0m. Default is \"\e[1m${CC}\e[0m\"."
+
+	echo -e "\n\t-d | --basedir \e[1;4mstr\e[0m"
+	echo -e "\t\tSets the base directory to \e[1;4mstr\e[0m. Default is the current dir."
+
+	echo -e "\n\t-f | --flags \e[1;4mstr\e[0m"
+	echo -e "\t\tSets the flags used when compiling the test programs to \e[1;4mstr\e[0m."
+	echo -e "\t\tDefault is \"\e[1m${CCOPT}\e[0m\"."
+
+	echo -e "\n\t-L | --linker \e[1;4mstr\e[0m"
+	echo -e "\t\tSets linker to \e[1;4mstr\e[0m.  It is used  only in the  \"linux-2.4.23-"
+	echo -e "\t\tpre3-testplatform\" subdirectory;  in other cases \$CC is used"
+	echo -e "\t\tas the linker. Default is \"\e[1mld\e[0m\"\e[1m^\e[0m."
+
+	echo -e "\n\t-m | --simulator \e[1;4mstr\e[0m"
+	echo -e "\t\tSets simulator to \e[1;4mstr\e[0m. It is called for execution time "
+	echo -e "\t\tmeasurement. Default is empty string."
+
+	echo -e "\n\t-R | --results \e[1;4mstr\e[0m"
+	echo -e "\t\tSets the measurements to do to \e[1;4mstr\e[0m.  Possible values are the"
+	echo -e "\t\tcombinations of \"size\", \"time\" and \"runtime\"."
+	echo -e "\t\tDefault is \"\e[1m${RESULTS}\e[0m\"."
+
+	echo -e "\n\t-s | --size \e[1;4mstr\e[0m"
+	echo -e "\t\tSets the  program  used  for  size  measurement to \e[1;4mstr\e[0m.  The"
+	echo -e "\t\toutput must contain at least 6 columnns,  where the first is"
+	echo -e "\t\tthe size of the read-only sections (text), the second is the"
+	echo -e "\t\tsize of the data  sections (data) and  the sixth is the name"
+	echo -e "\t\tof the object file. (Columns 3..5 are not relevant for us.)"
+	echo -e "\t\tDefault is \"\e[1m${SIZE}\e[0m\"."
+
+	echo -e "\n\t-S | --time \e[1;4mstr\e[0m"
+	echo -e "\t\tSets the  program  used for  time  measurement  to \e[1;4mstr\e[0m.  The"
+	echo -e "\t\tprogram must implement the switches -a (append),  -o (output"
+	echo -e "\t\tfile name) and -f (output format string)."
+	echo -e "\t\tDefault is \"\e[1m${TIME}\e[0m\"."
+
+	echo -e "\n\t-S | --shell \e[1;4mstr\e[0m"
+	echo -e "\t\tSets the  program  used for  shell  to \e[1;4mstr\e[0m.  The"
+	echo -e "\t\tprogram must implement newer shell features as bash."
+	echo -e "\t\tDefault is \"\e[1m${TIME}\e[0m\"."
+
+	echo -e "\n\t-h | --help"
+	echo -e "\t\tDisplays this help."
+	echo -e ""
+	echo -e "\t\e[1m^\e[0m: Note,  that  if the  compiler is  explicitly set,  the assembler,"
+	echo -e "\t   archiver and linker (if not set explicitly) get the prefix of the"
+	echo -e "\t   compiler."
+	echo -e "\noptions for advanced use (no effect on the measurement):"
+	echo -e "\n\t-b | --branch \e[1;4mstr\e[0m"
+	echo -e "\t\tSets branch name string to \e[1;4mstr\e[0m. Default is empty string."
+	echo -e "\n\t-l | --lib \e[1;4mstr\e[0m"
+	echo -e "\t\tSets library name string to \e[1;4mstr\e[0m. Default is empty string."
+	echo -e "\n\t-t | --target \e[1;4mstr\e[0m"
+	echo -e "\t\tSets target string to \e[1;4mstr\e[0m. Default is empty string."
+	echo -e "\n\t-u | --user \e[1;4mstr\e[0m"
+	echo -e "\t\tSets user name to \e[1;4mstr\e[0m. Default is empty string."
+	echo -e "\n\t-D | --cvstimestamp \e[1;4mstr\e[0m"
+	echo -e "\t\tSets cvs timestamp to \e[1;4mstr\e[0m. Default is empty string."
+	echo -e "\n\t-T | --cvstag \e[1;4mstr\e[0m"
+	echo -e "\t\tSets cvs tag to \e[1;4mstr\e[0m. Default is empty string."
+	echo -e ""
+	echo -e "This script  creates the  configuration directory  and the makefiles in them"
+	echo -e "with the chosen parameters in it.  Note that the compiler is not downloaded,"
+	echo -e "built or in any way created by this script and the generated makefiles."
+	echo -e "\nSend comments to <csibe-feedback@sed.inf.u-szeged.hu>."
+}
+
+while ! [ -z "$1" ]
+do
+	case $1 in
+	-* )
+		case $1 in
+		-a | --ar )
+			shift 1
+			if [ -n "$1" ]
+			then
+				AR="$1"
+			fi
+		;;
+		-b | --branch )
+			shift 1
+			if [ -n "$1" ]
+			then
+				BRANCH="$1"
+			fi
+		;;
+		-c | --compiler )
+			shift 1
+			if [ -n "$1" ]
+			then
+				CC="$1"
+			fi
+		;;
+		-d | --basedir )
+			shift 1
+			if [ -n "$1" ]
+			then
+				BASEDIR="$1"
+			fi
+		;;
+		-f | --flags )
+			shift 1
+			if [ -n "$1" ]
+			then
+				CCOPT="$1"
+			fi
+		;;
+		-h | --help )
+			Message
+			Help
+			exit 0
+		;;
+		-l | --lib )
+			shift 1
+			if [ -n "$1" ]
+			then
+				LIB="$1"
+			fi
+		;;
+		-m | --simulator )
+			shift 1
+			if [ -n "$1" ]
+			then
+				RUNSIM="$1"
+			fi
+		;;
+		-o | --object-counter )
+			shift 1
+			if [ -n "$1" ]
+			then
+				OBJCOUNTER="$1"
+			fi
+		;;
+		-p | --binary-prefix )
+			shift 1
+			if [ -n "$1" ]
+			then
+				BINPREFIX="$1"
+			fi
+		;;
+		-r | --run-counter )
+			shift 1
+			if [ -n "$1" ]
+			then
+				RUNCOUNTER="$1"
+			fi
+		;;
+		-s | --size )
+			shift 1
+			if [ -n "$1" ]
+			then
+				SIZE="$1"
+			fi
+		;;
+		-t | --target )
+			shift 1
+			if [ -n "$1" ]
+			then
+				TARGET="$1"
+			fi
+		;;
+		-u | --user )
+			shift 1
+			if [ -n "$1" ]
+			then
+				USER="$1"
+			fi
+		;;
+		-z | --zip )
+			shift 1
+			ZIP="$1"
+		;;
+		-A | --as )
+			shift 1
+			if [ -n "$1" ]
+			then
+				AS="$1"
+			fi
+		;;
+		-B | --shell )
+			shift 1
+			if [ -n "$1" ]
+			then
+				SHELL="$1"
+			fi
+		;;
+		-D | --timestamp )
+			shift 1
+			if [ -n "$1" ]
+			then
+				CVSDATE="$1"
+			fi
+		;;
+		-L | --linker )
+			shift 1
+			if [ -n "$1" ]
+			then
+				LD="$1"
+			fi
+		;;
+		-R | --results )
+			shift 1
+			if [ -n "$1" ]
+			then
+				RESULTS="$1"
+			fi
+		;;
+		-S | --time )
+			shift 1
+			if [ -n "$1" ]
+			then
+				TIME="$1"
+			fi
+		;;
+		-T | --cvstag )
+			shift 1
+			if [ -n "$1" ]
+			then
+				CVSTAG="$1"
+			fi
+		;;
+		* )
+			echo -e "Ignoring option: $1" >&2
+		esac
+	;;
+	* )
+		CONFIG="$1"
+	;;
+	esac
+	shift 1
+done
+
+if [ -z "${CONFIG}" ]
+then
+	Message
+	Help
+	exit 1
+fi
+
+##################
+if [ -z "${BINPREFIX}" ]
+then
+	case "${CC}" in
+	*gcc*)
+		BINPREFIX=`echo ${CC} | sed 's!gcc[^/]*$!!'`
+	;;
+	*cc*)
+		BINPREFIX=`echo ${CC} | sed 's!cc[^/]*$!!'`
+	;;
+	esac
+fi
+
+if [ -z "${AR}" ]
+then
+	AR=${BINPREFIX}ar
+fi
+
+if [ -z "${AS}" ]
+then
+	AS=${BINPREFIX}as
+fi
+
+if [ -z "${LD}" ]
+then
+	LD=${BINPREFIX}ld
+fi
+
+if [ -z "${NM}" ]
+then
+	NM=${BINPREFIX}nm
+fi
+
+if [ -z "${STRIP}" ]
+then
+	STRIP=${BINPREFIX}strip
+fi
+
+if [ -z "${OBJCOPY}" ]
+then
+	OBJCOPY=${BINPREFIX}objcopy
+fi
+
+if [ -z "${OBJDUMP}" ]
+then
+	OBJDUMP=${BINPREFIX}objdump
+fi
+
+##################
+
+if [ -n "${TIME}" ]
+then
+	TIME="${TIME} -a -o \$@.time -f \"%U\""
+fi
+
+if [ -n "${AR}" ]
+then
+	AR="${AR} rcs"
+fi
+
+if [ -z "${ZIP}" ]
+then
+	ZIP="cat"
+fi
+
+if [ -d ${BASEDIR}/${CONFIG} ]
+then
+	echo "${BASEDIR}/${CONFIG} exists, remove it first."
+	exit 2
+else
+	mkdir -p ${BASEDIR}/${CONFIG} || exit 1
+fi
+
+if ! [ -d ${SRCDIR} ]
+then
+	echo "${SRCDIR} not found, cannot copy sources."
+	exit 2
+fi
+
+for Y in `cd ${SRCDIR} ; find . -name '*[Mm]ake*.in' -print`
+do
+	X=${BASEDIR}/${CONFIG}/$Y
+	RELDIR=`dirname $Y`
+	mkdir -p ${BASEDIR}/${CONFIG}/$RELDIR
+	cp ${SRCDIR}/$Y $X
+	
+	case $X in
+	*/[Mm]akefile.in)
+		if [ -f `echo ${SRCDIR}/$Y | sed -e 's/[Mm]akefile.in$/CSiBE-run.make.in/'` ]
+		then
+			HAVERUNRULES="include CSiBE-run.make"
+			cp ${SRCDIR}/$RELDIR/CSiBE-run.make.in ${BASEDIR}/${CONFIG}/$RELDIR/CSiBE-run.make.in
+		else
+			HAVERUNRULES="run:"
+		fi
+	;;
+	*)
+		HAVERUNRULES="run:"
+	;;
+	esac
+
+	rm -f `echo $X | sed -e 's/.in$//'`
+	sed \
+	-e "s!@CSiBE-SHELL@!${SHELL}!" \
+	-e "s!@CSiBE-TIME@!${TIME}!" \
+	-e "s!@CSiBE-SIZE@!${SIZE}!" \
+	-e "s!@CSiBE-CC@!\$(TIME) ${CC} -c!" \
+	-e "s!@CSiBE-CC-PURE@!${CC}!" \
+	-e "s!@CSiBE-CCLD@!${CC}!" \
+	-e "s!@CSiBE-LD@!${LD}!" \
+	-e "s!@CSiBE-AR@!${AR}!" \
+	-e "s!@CSiBE-AS@!${AS}!" \
+	-e "s!@CSiBE-CPP@!${CC} -E!" \
+	-e "s!@CSiBE-CCOPT@!${CCOPT}!" \
+	-e "s!@CSiBE-ZIP@!${ZIP}!" \
+	-e "s!@CSiBE-NM@!${NM}!" \
+	-e "s!@CSiBE-STRIP@!${STRIP}!" \
+	-e "s!@CSiBE-OBJCOPY@!${OBJCOPY}!" \
+	-e "s!@CSiBE-OBJDUMP@!${OBJDUMP}!" \
+	-e "s!@CSiBE-CROSS-PREFIX@!${BINPREFIX}!" \
+	-e "s!@CSiBE-RUNSIM@!${RUNSIM}!" \
+	-e "s/@CSiBE-OBJCOUNTER@/${OBJCOUNTER}/" \
+	-e "s/@CSiBE-RUNCOUNTER@/${RUNCOUNTER}/" \
+	-e "s/@CSiBE-ALLRESULTS@/${RESULTS}/" \
+	-e "s/@CSiBE-VERSION@/${VER_M}/" \
+	-e "s/@CSiBE-INFO-USER@/${USER}/" \
+	-e "s/@CSiBE-INFO-BRANCH@/${BRANCH}/" \
+	-e "s/@CSiBE-INFO-TARGET@/${TARGET}/" \
+	-e "s/@CSiBE-INFO-LIB@/${LIB}/" \
+	-e "s/@CSiBE-INFO-CVSDATE@/${CVSDATE}/" \
+	-e "s/@CSiBE-INFO-CVSTAG@/${CVSTAG}/" \
+	-e "s/@CSiBE-RUN-RULES@/${HAVERUNRULES}/" \
+	-e "s!@CSiBE-SRCDIR@!${SRCDIR}/${RELDIR}!" \
+	$X > `echo $X | sed -e 's/.in$//'`
+done
+
+LIN="linux-2.4.23-pre3-testplatform"
+
+cp ${SRCDIR}/$LIN/.config ${BASEDIR}/${CONFIG}/$LIN/.config
+cp ${SRCDIR}/$LIN/.depend ${BASEDIR}/${CONFIG}/$LIN/.depend
+cp ${SRCDIR}/$LIN/.hdepend ${BASEDIR}/${CONFIG}/$LIN/.hdepend
+cp ${SRCDIR}/$LIN/.version ${BASEDIR}/${CONFIG}/$LIN/.version
+ln -sf ${SRCDIR}/$LIN/include/ ${BASEDIR}/${CONFIG}/$LIN/include
+ln -sf ${SRCDIR}/testdata ${BASEDIR}/${CONFIG}/testdata
+
+for X in `find ${BASEDIR}/${CONFIG}/linux-2.4.23-pre3-testplatform -name '.*depend' -print`
+do
+	sed -e "s!@CSiBE-CONFIGROOT@!${BASEDIR}/${CONFIG}!" $X > $X.CSiBEdep
+	mv -f $X.CSiBEdep $X
+done

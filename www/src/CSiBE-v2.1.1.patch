@@ -1,0 +1,290 @@
+diff -r CSiBE/bin/create-config CSiBE_patched/bin/create-config
+1c1
+< #!/bin/sh
+---
+> #!/bin/bash
+99a100,105
+> # Use variable `SHELL' to point to the executable that will be used as shell
+> # since default /bin/sh might link to too old shell (the default is "bash").
+> #
+> SHELL="/bin/bash"
+> 
+> #
+195a202,206
+> 	echo -e "\n\t-S | --shell \e[1;4mstr\e[0m"
+> 	echo -e "\t\tSets the  program  used for  shell  to \e[1;4mstr\e[0m.  The"
+> 	echo -e "\t\tprogram must implement newer shell features as bash."
+> 	echo -e "\t\tDefault is \"\e[1m${TIME}\e[0m\"."
+> 
+333a345,351
+> 		-B | --shell )
+> 			shift 1
+> 			if [ -n "$1" ]
+> 			then
+> 				SHELL="$1"
+> 			fi
+> 		;;
+489a508
+> 	-e "s!@CSiBE-SHELL@!${SHELL}!" \
+diff -r CSiBE/src/bzip2-1.0.2/Makefile.in CSiBE_patched/src/bzip2-1.0.2/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/cg_compiler_opensrc/Makefile.in CSiBE_patched/src/cg_compiler_opensrc/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/compiler/Makefile.in CSiBE_patched/src/compiler/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/flex-2.5.31/Makefile.in CSiBE_patched/src/flex-2.5.31/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/jikespg-1.3/src/Makefile.in CSiBE_patched/src/jikespg-1.3/src/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/jpeg-6b/Makefile.in CSiBE_patched/src/jpeg-6b/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/libmspack/mspack/Makefile.in CSiBE_patched/src/libmspack/mspack/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/libmspack/test/Makefile.in CSiBE_patched/src/libmspack/test/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/libpng-1.2.5/Makefile.in CSiBE_patched/src/libpng-1.2.5/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/arch/testplatform/kernel/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/arch/testplatform/kernel/Makefile.in
+8a9
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/arch/testplatform/lib/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/arch/testplatform/lib/Makefile.in
+3a4
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/arch/testplatform/mm/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/arch/testplatform/mm/Makefile.in
+8a9
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/crypto/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/crypto/Makefile.in
+3a4
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/block/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/block/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/cdrom/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/cdrom/Makefile.in
+4a5
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/char/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/char/Makefile.in
+11a12
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/hotplug/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/hotplug/Makefile.in
+3a4
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/Makefile.in
+7a8
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/media/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/media/Makefile.in
+11a12
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/misc/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/misc/Makefile.in
+11a12
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/net/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/net/Makefile.in
+5a6
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/parport/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/parport/Makefile.in
+11a12
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/drivers/sound/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/drivers/sound/Makefile.in
+5a6
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/fs/ext3/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/fs/ext3/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/fs/jbd/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/fs/jbd/Makefile.in
+6a7
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/fs/lockd/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/fs/lockd/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/fs/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/fs/Makefile.in
+7a8
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/fs/nfs/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/fs/nfs/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/fs/nfsd/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/fs/nfsd/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/fs/partitions/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/fs/partitions/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/fs/ramfs/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/fs/ramfs/Makefile.in
+4a5
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/ipc/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/ipc/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/kernel/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/kernel/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/lib/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/lib/Makefile.in
+8a9
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/lib/zlib_deflate/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/lib/zlib_deflate/Makefile.in
+8a9
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/lib/zlib_inflate/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/lib/zlib_inflate/Makefile.in
+15a16
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/Makefile.in
+21c21
+< HOSTCFLAGS	= -w -O2 -fomit-frame-pointer
+---
+> HOSTCFLAGS	= -w
+30a31
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/mm/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/mm/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/802/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/802/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/8021q/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/8021q/Makefile.in
+10a11
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/core/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/core/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/ethernet/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/ethernet/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/ipv4/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/ipv4/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/Makefile.in
+7a8
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/netlink/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/netlink/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/sched/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/sched/Makefile.in
+4a5
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/net/sunrpc/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/net/sunrpc/Makefile.in
+9a10
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/scripts/lxdialog/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/scripts/lxdialog/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/linux-2.4.23-pre3-testplatform/scripts/Makefile.in CSiBE_patched/src/linux-2.4.23-pre3-testplatform/scripts/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/lwip-0.5.3.preproc/proj/unixsim/Makefile.in CSiBE_patched/src/lwip-0.5.3.preproc/proj/unixsim/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+10c11
+< CFLAGS=$(CCOPT) -fno-builtin -w
+---
+> CFLAGS=$(CCOPT) -w
+diff -r CSiBE/src/Makefile.in CSiBE_patched/src/Makefile.in
+52a53
+> SHELL  := @CSiBE-SHELL@
+diff -r CSiBE/src/mpeg2dec-0.3.1/libmpeg2/Makefile.in CSiBE_patched/src/mpeg2dec-0.3.1/libmpeg2/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+17a19
+> CFLAGS += -fno-short-enums
+diff -r CSiBE/src/mpeg2dec-0.3.1/libvo/Makefile.in CSiBE_patched/src/mpeg2dec-0.3.1/libvo/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+14a16
+> CFLAGS += -fno-short-enums
+diff -r CSiBE/src/mpeg2dec-0.3.1/src/Makefile.in CSiBE_patched/src/mpeg2dec-0.3.1/src/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+14a16
+> CFLAGS += -fno-short-enums
+diff -r CSiBE/src/mpgcut-1.1/Makefile.in CSiBE_patched/src/mpgcut-1.1/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/OpenTCP-1.0.4/Makefile.in CSiBE_patched/src/OpenTCP-1.0.4/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+10c11
+< CFLAGS := $(CCOPT) -fno-builtin -I$(VPATH)/include -Iinclude -D__IO_NEAR -D__io= -w
+---
+> CFLAGS := $(CCOPT) -I$(VPATH)/include -Iinclude -D__IO_NEAR -D__io= -w
+diff -r CSiBE/src/replaypc-0.4.0.preproc/Makefile.in CSiBE_patched/src/replaypc-0.4.0.preproc/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/air/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/air/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/alan/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/alan/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/bane/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/bane/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/biff/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/biff/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/dye/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/dye/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/echo/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/echo/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/ell/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/ell/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/gage/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/gage/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/hest/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/hest/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/hex/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/hex/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/hoover/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/hoover/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/limn/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/limn/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/mite/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/mite/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/moss/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/moss/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/nrrd/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/nrrd/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/ten/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/ten/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/teem-1.6.0-src/src/unrrdu/Makefile.in CSiBE_patched/src/teem-1.6.0-src/src/unrrdu/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/ttt-0.10.1.preproc/src/Makefile.in CSiBE_patched/src/ttt-0.10.1.preproc/src/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/unrarlib-0.4.0/Makefile.in CSiBE_patched/src/unrarlib-0.4.0/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
+diff -r CSiBE/src/unrarlib-0.4.0/samples/unix/getfile/Makefile CSiBE_patched/src/unrarlib-0.4.0/samples/unix/getfile/Makefile
+6c6
+< CFLAGS  =       -ansi -pedantic -pipe -I$(UNRARDIR) -Wall -W -O2 -fPIC -DNO_DEBUG
+---
+> CFLAGS  =       -ansi -pedantic -pipe -I$(UNRARDIR) -Wall -W -fPIC -DNO_DEBUG
+diff -r CSiBE/src/unrarlib-0.4.0/samples/unix/listarchive/Makefile CSiBE_patched/src/unrarlib-0.4.0/samples/unix/listarchive/Makefile
+3c3
+< CFLAGS  =       -ansi -pedantic -pipe -I$(UNRARDIR) -Wall -W -O2 -fPIC -DNO_DEBUG
+---
+> CFLAGS  =       -ansi -pedantic -pipe -I$(UNRARDIR) -Wall -W -fPIC -DNO_DEBUG
+diff -r CSiBE/src/zlib-1.1.4/Makefile.in CSiBE_patched/src/zlib-1.1.4/Makefile.in
+0a1
+> SHELL := @CSiBE-SHELL@
