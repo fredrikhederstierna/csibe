@@ -54,8 +54,17 @@ All toolchains built with <a href="http://github.com/fredrikhederstierna/buildbu
 
 <p>
 CSiBE v2.1.1 sources downloaded from
-<a href="http://www.inf.u-szeged.hu/projectdirs/csibe/download.php">CSiBE homepage</a> and modified some to make it runnable from Ubuntu 14.04 shell.<br>
+<a href="http://www.csibe.org/old/">CSiBE homepage</a> and modified some to make it runnable from Ubuntu 14.04 shell.<br>
+
+<p>
+A newer CSiBE page is at
+<a href="http://szeged.github.io/csibe/">CSiBE newer homepage</a>.<br>
+
 All CSiBE Sources +modifications by me can be downloaded <a href="src/CSiBE-v2.1.1.patch">here</a> or full package <a href="src/CSiBE-v2.1.1-patched.tar.xz">here</a><br>
+<p>
+  Starting from GCC 8.2.0, I found out that several source files in CSiBE sources contained use of uninitialized variables, which resulted in undeterministic code generation. This was patched also and removed by me. Fully pached version can be downloaded here <a href="src/CSiBE-v2.1.1-patched2.tar.xz">here</a> and corresponding used <a href="src/create-config">create-config</a>
+<br>
+
 All result-size files and summary can be downloaded <a href="results/csibe_results.zip">here</a>.<br>
 
 Graph was copied from <a href="https://github.com/mbostock/d3/wiki/Gallery">D3 gallery</a><br><br>
